@@ -884,7 +884,12 @@ else()
     target_link_libraries(AetherSDR PRIVATE mspack_static)
 endif()
 
-if (USE_SYSTEM_LIBMOSQUITTO)
+# Link the system libmosquitto target only when MQTT is enabled — the
+# pkg_check_modules() call that defines PkgConfig::libmosquitto lives
+# inside the ENABLE_MQTT block above, so without this guard the combo
+# (ENABLE_MQTT=OFF + USE_SYSTEM_LIBMOSQUITTO=ON) would configure cleanly
+# then fail at link time with a missing target.
+if (ENABLE_MQTT AND USE_SYSTEM_LIBMOSQUITTO)
     target_link_libraries(AetherSDR PRIVATE PkgConfig::libmosquitto)
 endif()
 
